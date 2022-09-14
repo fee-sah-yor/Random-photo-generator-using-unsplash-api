@@ -26,6 +26,14 @@
         font-size: 56px;
     }
 
+    input {
+        margin-bottom: 1rem;
+    }
+
+    input:focus {
+        border: black;
+    }
+
     .imageDetails {
         background-color: black;
         margin-top: 50px;
@@ -45,36 +53,73 @@
     }
 </style>
 
-<body>
+<body onload = 'populate()'>
     <h1>Random Unsplash Image</h1>
+    <input type="text" placeholder="search.....">
     <div class="imageContainer">
         <a id="imageLink" href="#">
             <img alt="" id="unsplashImage" />
+        </a>
+    </div>
+    <div class="searchimages">
+        <a id="searchLink" href="#">
+            <img alt="" id="searchImage" />
         </a>
     </div>
     <p class="imageDetails">Photo by <a id="creator" href="#">NAME</a> on <a
             href="https://www.unsplash.com">Unsplash</a>!</p>
 
     <script>
-        let clientId = "X-SiQ98DnuN_fa4KP2ncYLPTqz4GW9Ns-LlS1q-oL3Q";
-        let endpoint = `https://api.unsplash.com/photos/random?client_id=${clientId}`;
-
         let imageElement = document.querySelector('#unsplashImage');
         let imageLink = document.querySelector('#imageLink');
         let creator = document.querySelector('#creator');
 
-        fetch(endpoint)
-            .then(response => response.json())
-            .then(function (jsonData) {
-               imageElement.src = jsonData.urls.regular;
-               imageLink.setAttribute("href", jsonData.links.html);
-               creator.innerText = jsonData.user.name;
-               console.log(creator.innerText);
-               creator.setAttribute("href", jsonData.user.portfolio_url);
-              
-            })
+          function populate(){
+        let clientId = "X-SiQ98DnuN_fa4KP2ncYLPTqz4GW9Ns-LlS1q-oL3Q";
+            let endpoint = `https://api.unsplash.com/photos/random?client_id=${clientId}`;
 
-            .catch(error => "Error:" + error);
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(function (jsonData) {
+                    console.log(jsonData);
+                    imageElement.src = jsonData.urls.regular;
+                    imageLink.setAttribute("href", jsonData.links.html);
+                    creator.innerText = jsonData.user.name;
+                    creator.setAttribute("href", jsonData.user.portfolio_url);
+                })
+
+                .catch(error => "Error:" + error);
+          }
+          populate();
+
+        function populate2() {
+            let inputValue = document.querySelector('input').value;
+            let clientId = "X-SiQ98DnuN_fa4KP2ncYLPTqz4GW9Ns-LlS1q-oL3Q";
+            let endpoint2 = `https://api.unsplash.com/search/photos?query=${inputValue}&page=1&client_id=${clientId}`;
+            let searchresults = document.querySelector('.searchimages');
+            const searchImage = document.querySelector('#searchImage');
+            const searchLink = document.querySelector('#searchLink');
+            fetch(endpoint2)
+                .then(response => response.json())
+                .then(function (dataValue) {
+                    let searchResults = dataValue.results;
+                    searchResults.forEach(searchResult => {
+                        searchImage.src = searchResult.urls.small;
+                        searchLink.setAttribute("href", searchResult.links.html);
+                        creator.innerText = searchResult.user.name;
+                    creator.setAttribute("href", searchResult.user.portfolio_url);
+                    });
+                })
+                .catch(error => "Error:" + error);
+        }
+
+        document.querySelector('input').addEventListener('keypress', (e) => {
+            if (event.keyCode === 13) {
+                populate2();
+                document.querySelector('input').value = '';
+                document.querySelector('.imageContainer').style.display = 'none';
+            }
+        })
     </script>
 </body>
 
