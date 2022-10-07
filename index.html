@@ -103,6 +103,7 @@
                 .then(response => response.json())
                 .then(function (dataValue) {
                     let searchResults = dataValue.results;
+                    // const {url.small,links.html} = searchResults
                     searchResults.forEach(searchResult => {
                         searchImage.src = searchResult.urls.small;
                         searchLink.setAttribute("href", searchResult.links.html);
